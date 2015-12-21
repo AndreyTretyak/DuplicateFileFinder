@@ -10,6 +10,6 @@ namespace DuplicateFileFinder.Core
 
         public string CurrentAction { get; set; }
 
-        public double Percentege => FilesProcessed / (double) (FilesCount * ComparatorsCount);
+        public double Percentege => ((double)FilesProcessed) /  (FilesCount * ComparatorsCount);
     }
 }

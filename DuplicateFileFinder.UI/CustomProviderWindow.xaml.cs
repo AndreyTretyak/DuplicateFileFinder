@@ -10,24 +10,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace DuplicateFileFinder.UI
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for CustomProviderWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class CustomProviderWindow : Window
     {
-        public MainWindow()
+        public CustomProviderWindow()
         {
             InitializeComponent();
-        }
-
-        private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            throw new NotImplementedException();
         }
     }
 }

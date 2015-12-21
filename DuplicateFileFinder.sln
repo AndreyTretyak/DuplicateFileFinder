@@ -11,20 +11,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuplicateFileFinder.Core", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuplicateFileFinder.Core.Azure", "DuplicateFileFinder.Azure\DuplicateFileFinder.Core.Azure.csproj", "{7C2DB4A9-E420-4586-B10C-37442642304F}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DuplicateFileFinder.Core.Interfaces", "DuplicateFileFinder.Core.Interfaces\DuplicateFileFinder.Core.Interfaces.shproj", "{A675DEA4-0E8E-4EDC-A2DE-E246EE325CC8}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{3E884F3A-4F40-4BF2-B29C-E9AF41FF0A0D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuplicateFileFinder.Tests", "DuplicateFileFinder.Tests\DuplicateFileFinder.Tests.csproj", "{9FBE8E15-C14D-43DF-823F-4A3A0DFA0CF5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuplicateFileFinder.UI", "DuplicateFileFinder.UI\DuplicateFileFinder.UI.csproj", "{B3D7E75E-8356-4B80-BC8B-0F37AE6E24C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuplicateFileFinder.Core.Interfaces", "DuplicateFileFinder.Core.Interfaces\DuplicateFileFinder.Core.Interfaces.csproj", "{2E02601C-8616-43C4-B562-003B91A3B85A}"
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		DuplicateFileFinder.Core.Interfaces\DuplicateFileFinder.Core.Interfaces.projitems*{7c2db4a9-e420-4586-b10c-37442642304f}*SharedItemsImports = 4
-		DuplicateFileFinder.Core.Interfaces\DuplicateFileFinder.Core.Interfaces.projitems*{79dedcf8-81f8-4275-a19b-0ab0577f718e}*SharedItemsImports = 4
-		DuplicateFileFinder.Core.Interfaces\DuplicateFileFinder.Core.Interfaces.projitems*{a675dea4-0e8e-4edc-a2de-e246ee325cc8}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM
@@ -132,6 +127,22 @@ Global
 		{B3D7E75E-8356-4B80-BC8B-0F37AE6E24C8}.Release|x64.Build.0 = Release|Any CPU
 		{B3D7E75E-8356-4B80-BC8B-0F37AE6E24C8}.Release|x86.ActiveCfg = Release|Any CPU
 		{B3D7E75E-8356-4B80-BC8B-0F37AE6E24C8}.Release|x86.Build.0 = Release|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Debug|ARM.Build.0 = Debug|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Debug|x64.Build.0 = Debug|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Debug|x86.Build.0 = Debug|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Release|ARM.ActiveCfg = Release|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Release|ARM.Build.0 = Release|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Release|x64.ActiveCfg = Release|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Release|x64.Build.0 = Release|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Release|x86.ActiveCfg = Release|Any CPU
+		{2E02601C-8616-43C4-B562-003B91A3B85A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

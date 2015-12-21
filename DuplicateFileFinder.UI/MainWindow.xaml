@@ -4,9 +4,131 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DuplicateFileFinder.UI"
+        xmlns:vm="clr-namespace:DuplicateFileFinder.UI.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+        DataContext="{Binding Main, Source={StaticResource Locator}}"
+        Title="{x:Static local:Resource.DuplicateFilesFinder}" MinHeight="500" Height="600" MinWidth="600" Width="800">
+    <Window.Resources>
+        <Style x:Key="BaseElementStyle" TargetType="FrameworkElement">
+            <Setter Property="Margin" Value="3" />
+        </Style>
+        <Style x:Key="InlineControlStyle" BasedOn="{StaticResource BaseElementStyle}" TargetType="FrameworkElement">
+            <Setter Property="Height" Value="25" />
+        </Style>
+        <Style x:Key="ButtonStyle" BasedOn="{StaticResource InlineControlStyle}" TargetType="Button">
+            <Setter Property="MinWidth" Value="120" />
+        </Style>
+        <Style x:Key="LableStyle" BasedOn="{StaticResource InlineControlStyle}" TargetType="Label">
+            <Setter Property="MinWidth" Value="100" />
+        </Style>
+        <Style x:Key="TextBoxStyle" BasedOn="{StaticResource InlineControlStyle}" TargetType="TextBox">
+        </Style>
+        <Style x:Key="ComboBoxStyle" BasedOn="{StaticResource InlineControlStyle}" TargetType="ComboBox">
+        </Style>
+        <Style x:Key="ProgresBarStyle" BasedOn="{StaticResource InlineControlStyle}" TargetType="ProgressBar">
+        </Style>
+        <Style x:Key="ListViewStyle" BasedOn="{StaticResource BaseElementStyle}" TargetType="ListView">
+        </Style>
+        <Style x:Key="TreeViewStyle" BasedOn="{StaticResource BaseElementStyle}" TargetType="TreeView">
+        </Style>
+    </Window.Resources>
+    <Grid Name="MainGrid" Style="{StaticResource BaseElementStyle}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Name="Settings" Row="0" Style="{StaticResource BaseElementStyle}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Content="{x:Static local:Resource.SelectedFolder}" Style="{StaticResource LableStyle}"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding FolderPath, Mode=TwoWay}" Style="{StaticResource TextBoxStyle}"/>
+            <Button Grid.Row="0" Grid.Column="2" Content="{x:Static local:Resource.SelectFolder}" Command="{Binding OpenFolderSelectorCommand}" Style="{StaticResource ButtonStyle}"/>
+            <Button Grid.Row="0" Grid.Column="3" Content="{x:Static local:Resource.FindDuplicates}" Command="{Binding FindDuplicatesCommand}" Style="{StaticResource ButtonStyle}"/>
+            <Expander Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Header="{x:Static local:Resource.ExtendedSettings}" >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" MinWidth="100" Content="{x:Static local:Resource.FilesProvider}"/>
+                    <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" 
+                        ItemsSource="{Binding Providers}" 
+                        SelectedItem="{Binding SelectedProvider, Mode=TwoWay}"
+                        Style="{StaticResource ComboBoxStyle}"/>
+                    <Button Grid.Row="0" Grid.Column="3" Margin="3" Content="{x:Static local:Resource.AddProvider}" Command="{Binding AddProviderCommand}"/>
+
+                    <Label Grid.Row="1" VerticalAlignment="Top" Content="{x:Static local:Resource.Comparators}" Style="{StaticResource LableStyle}"/>
+                    <ListView Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"  IsManipulationEnabled="True"
+                        ItemsSource="{Binding Comparators}"
+                        SelectedItem="{Binding SelectedComparator, Mode=TwoWay}"
+                        Style="{StaticResource ListViewStyle}" 
+                        SelectionMode="Single">
+                        <ListView.ItemTemplate>
+                            <DataTemplate >
+                                <Label Content="{Binding Name}" Foreground="{Binding IsEnabled, Converter={StaticResource BoolToColorConverter}}"/>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <StackPanel Grid.Row="1" Grid.Column="3" >
+                        <Button  Content="{x:Static local:Resource.AddComparator}" Command="{Binding AddComparatorCommand}" Style="{StaticResource ButtonStyle}"/>
+                        <Button  Content="{x:Static local:Resource.MoveUp}" Command="{Binding MoveUpCommand}" Style="{StaticResource ButtonStyle}"/>
+                        <Button  Content="{x:Static local:Resource.MoveDown}" Command="{Binding MoveDownCommand}" Style="{StaticResource ButtonStyle}"/>
+                        <Button  Content="{Binding ComparatorButtonText}" Command="{Binding ChangeComparatorStatusCommand}" Style="{StaticResource ButtonStyle}"/>
+                    </StackPanel>
+                </Grid>
+            </Expander>
+        </Grid>
+        <Grid Name="Result" Row="1" Style="{StaticResource BaseElementStyle}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Content="{x:Static local:Resource.SelectedFolderContent}" />
+            <TreeView Grid.Row="1" Grid.Column="0" 
+                      ItemsSource="{Binding Files}"
+                      Style="{StaticResource TreeViewStyle}">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate>
+                        <Label Content="{Binding FileName}"/>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+            <Label Grid.Row="2" Grid.Column="0" Content="{Binding FilesFound}" Style="{StaticResource LableStyle}"/>
+
+            <Label Grid.Row="0" Grid.Column="1" Content="{x:Static local:Resource.Result}" Style="{StaticResource LableStyle}"/>
+            <TreeView Grid.Row="1" Grid.Column="1" 
+                      ItemsSource="{Binding FileGroups}"
+                      Style="{StaticResource TreeViewStyle}">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding}">
+                        <Label Content="{Binding}"/>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+            <Label Grid.Row="2" Grid.Column="1" Content="{Binding ResultSummary}" Style="{StaticResource LableStyle}"/>
+            <Button Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" Content="{x:Static local:Resource.SaveResult}" Command="{Binding SaveResultCommand}" Style="{StaticResource ButtonStyle}"/>
+        </Grid>
+        <ProgressBar Grid.Row="2" Value="{Binding ProgressValue}" Style="{StaticResource ProgresBarStyle}"></ProgressBar>
+        <Label Grid.Row="2" HorizontalAlignment="Left" Content="{Binding ProgressMessage}" Style="{StaticResource LableStyle}"/>
     </Grid>
 </Window>
