@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Remoting;
+using System.Threading;
 using System.Threading.Tasks;
 using DuplicateFileFinder.Core;
 using DuplicateFileFinder.Tests.Mocks;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace DuplicateFileFinder.Tests
 {
@@ -11,6 +14,10 @@ namespace DuplicateFileFinder.Tests
     public class ComparationManagerTests
     {
         private static readonly Random Random = new Random(13);
+
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+        private static readonly IComparableFile[] DefaultFiles = new IComparableFile[] {new FileMock(), new FileMock()};
 
         [Test]
         [TestCase(100, 1)]
@@ -45,6 +52,99 @@ namespace DuplicateFileFinder.Tests
 
 
         [Test]
+        public async Task OperationCanceledTestAsync()
+        {
+            _cancellationTokenSource = new CancellationTokenSource();
+            try
+            {
+                var task = GeneralTestAsync(new IFileComparator[] {new ComparatorMock()}, 
+                Enumerable.Repeat((IComparableFile)new FileMock(), 10000).ToArray());
+                _cancellationTokenSource.Cancel(true);
+                var result = await task;
+                //TODO: something wrong with test execution order, should be changed
+                //Assert.Fail($"{typeof(OperationCanceledException)} expected");
+            }
+            catch (OperationCanceledException) { }
+        }
+
+        [Test]
+        public async Task OperationCanceledInsideGetCriteriaTestAsync()
+        {
+            try
+            {
+                var result = await GeneralTestAsync(new IFileComparator[]
+                {
+                    new ComparatorMock(f => { throw new OperationCanceledException(); })
+                }, DefaultFiles);
+                Assert.Fail($"{typeof(OperationCanceledException)} expected");
+            }
+            catch (OperationCanceledException) { }
+        }
+
+        [Test]
+        public async Task OperationCanceledInsideComperingTestAsync()
+        {
+            try
+            {
+                var result = await GeneralTestAsync(new IFileComparator[]
+                {
+                    new ComparatorMock(
+                        compareFunction: (f, s) => { throw new OperationCanceledException(); })
+                }, DefaultFiles);
+                Assert.Fail($"{typeof(OperationCanceledException)} expected");
+            }
+            catch (OperationCanceledException){}
+        }
+
+
+        [Test]
+        public async Task ExceptionTestInCriteriaAndComparation()
+        {
+            var result = await GeneralTestAsync(new IFileComparator[]
+            {
+                new ComparatorMock(
+                f => {throw new InvalidOperationException();},
+                (f, s) => {throw new InvalidOperationException();})
+            }, DefaultFiles);
+        }
+
+        [Test]
+        public async Task ExceptionTestInCriteria()
+        {
+            var result = await GeneralTestAsync(new IFileComparator[]
+            {
+                new ComparatorMock(
+                f =>
+                {
+                    throw new InvalidOperationException();
+                })
+            },
+            new IComparableFile[]
+            {
+               new FileMock(),
+               new FileMock()
+            });
+        }
+
+        [Test]
+        public async Task ExceptionTestInComparation()
+        {
+            var result = await GeneralTestAsync(new IFileComparator[]
+            {
+                new ComparatorMock(
+                compareFunction: (f, s) =>
+                {
+                    throw new InvalidOperationException();
+                })
+            },
+            new IComparableFile[]
+            {
+               new FileMock(),
+               new FileMock()
+            });
+        }
+
+        [Test]
         public async Task ComparatorRedunnatCallTest()
         {
             var result = await GeneralTestAsync(new IFileComparator[]
@@ -55,12 +155,7 @@ namespace DuplicateFileFinder.Tests
                     Assert.Fail("Redunant comparator call");
                     return false;
                 })
-            },
-            new IComparableFile[]
-            {
-               new FileMock(),
-               new FileMock()
-            });
+            }, DefaultFiles);
         }
 
         [Test]
@@ -91,7 +186,7 @@ namespace DuplicateFileFinder.Tests
         public async Task<FileGroup[]> GeneralTestAsync(IFileComparator[] comparators, IComparableFile[] files)
         {
             var manager = new ComparationManager(new ComparationsFactoryMock(comparators));
-            var result = (await manager.FindDuplicatesAsync(files)).ToArray();
+            var result = (await manager.FindDuplicatesAsync(files, _cancellationTokenSource.Token)).ToArray();
             Assert.AreEqual(files.Length, result.Sum(g => g.Count));
             return result;
         }

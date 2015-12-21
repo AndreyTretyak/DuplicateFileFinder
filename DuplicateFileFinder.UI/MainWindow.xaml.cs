@@ -24,10 +24,5 @@ namespace DuplicateFileFinder.UI
         {
             InitializeComponent();
         }
-
-        private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

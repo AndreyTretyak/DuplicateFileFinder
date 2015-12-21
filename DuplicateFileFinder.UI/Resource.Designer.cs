@@ -88,6 +88,15 @@ namespace DuplicateFileFinder.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Comparators.
         /// </summary>
         public static string Comparators {
@@ -201,6 +210,33 @@ namespace DuplicateFileFinder.UI {
         public static string MoveUp {
             get {
                 return ResourceManager.GetString("MoveUp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No directory selected.
+        /// </summary>
+        public static string NoDirectorySelected {
+            get {
+                return ResourceManager.GetString("NoDirectorySelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operation canceled by user.
+        /// </summary>
+        public static string OperationCanceled {
+            get {
+                return ResourceManager.GetString("OperationCanceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select directory to check.
+        /// </summary>
+        public static string PleaseSelectDirectory {
+            get {
+                return ResourceManager.GetString("PleaseSelectDirectory", resourceCulture);
             }
         }
         

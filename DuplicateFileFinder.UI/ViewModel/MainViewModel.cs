@@ -84,7 +84,14 @@ namespace DuplicateFileFinder.UI.ViewModel
             if (result == DialogResult.OK)
             {
                 FolderPath = dialog.SelectedPath;
-                Files = new ObservableCollection<IComparableFile>(await SelectedProvider.Implementation.GetDirectoryFilesAsync(FolderPath));
+                await Task.Run(async () =>
+                {
+                    Files = new ObservableCollection<IComparableFile>();
+                    foreach (var file in await SelectedProvider.Implementation.GetDirectoryFilesAsync(FolderPath))
+                    {
+                        Files.Add(file);
+                    }
+                });
                 RaisePropertyChanged(() => Files);
                 RaisePropertyChanged(() => FilesFound);
             }
@@ -184,16 +191,57 @@ namespace DuplicateFileFinder.UI.ViewModel
 
         public ObservableCollection<FileGroup> FileGroups { get; set; }
 
+        private bool _inProgress = false;
+
+        public bool InProgress
+        {
+            get { return _inProgress; }
+            private set
+            {
+                _inProgress = value;
+                RaisePropertyChanged(() => StartButtonText);
+            }
+        }
+
+        public string StartButtonText => InProgress ? Resource.Cancel : Resource.FindDuplicates;
+
         private async void FindDuplicates()
         {
-            _cancellationTokenSource = new CancellationTokenSource();
-            _progressInformation = new ProgressInformation();
-            var progress = new Progress<IProgressChanged>(ProgresChanged);
-            var filesGroups = await new ComparationManager().FindDuplicatesAsync(Files, _cancellationTokenSource.Token, progress);
-            ProgressMessage = Resource.Done;
-            ProgressValue = 100;
-            FileGroups = new ObservableCollection<FileGroup>(filesGroups);
-            ResultSummary = string.Format(Resource.DuplicatesFound, filesGroups.Where(g => g.Count > 1).Sum(g => g.Count - 1));
+            if (!InProgress)
+            {
+                InProgress = true;
+                if (Files == null)
+                {
+                    System.Windows.MessageBox.Show(Resource.PleaseSelectDirectory, Resource.NoDirectorySelected, MessageBoxButton.OK, MessageBoxImage.Information);
+                    InProgress = false;
+                    return;
+                }
+                _cancellationTokenSource = new CancellationTokenSource();
+                _progressInformation = new ProgressInformation();
+                var progress = new Progress<IProgressChanged>(ProgresChanged);
+
+                await Task.Run(async () =>
+                {
+                    try
+                    {
+                        FileGroups = new ObservableCollection<FileGroup>();
+                        foreach (var fileGroup in await new ComparationManager().FindDuplicatesAsync(Files, _cancellationTokenSource.Token, progress))
+                        {
+                            FileGroups.Add(fileGroup);
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        ProgressValue = 0;
+                        ProgressMessage = Resource.OperationCanceled;
+                    }
+                });
+                InProgress = false;
+            }
+            else
+            {
+                _cancellationTokenSource.Cancel(true);
+            }
         }
         
         private CancellationTokenSource _cancellationTokenSource;

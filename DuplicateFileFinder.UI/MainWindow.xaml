@@ -52,7 +52,7 @@
             <Label Grid.Row="0" Grid.Column="0" Content="{x:Static local:Resource.SelectedFolder}" Style="{StaticResource LableStyle}"/>
             <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding FolderPath, Mode=TwoWay}" Style="{StaticResource TextBoxStyle}"/>
             <Button Grid.Row="0" Grid.Column="2" Content="{x:Static local:Resource.SelectFolder}" Command="{Binding OpenFolderSelectorCommand}" Style="{StaticResource ButtonStyle}"/>
-            <Button Grid.Row="0" Grid.Column="3" Content="{x:Static local:Resource.FindDuplicates}" Command="{Binding FindDuplicatesCommand}" Style="{StaticResource ButtonStyle}"/>
+            <Button Grid.Row="0" Grid.Column="3" Content="{Binding StartButtonText}" Command="{Binding FindDuplicatesCommand}" Style="{StaticResource ButtonStyle}"/>
             <Expander Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Header="{x:Static local:Resource.ExtendedSettings}" >
                 <Grid>
                     <Grid.RowDefinitions>

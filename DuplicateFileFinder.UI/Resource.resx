@@ -180,4 +180,16 @@
   <data name="Done" xml:space="preserve">
     <value>Done</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="NoDirectorySelected" xml:space="preserve">
+    <value>No directory selected</value>
+  </data>
+  <data name="OperationCanceled" xml:space="preserve">
+    <value>Operation canceled by user</value>
+  </data>
+  <data name="PleaseSelectDirectory" xml:space="preserve">
+    <value>Please select directory to check</value>
+  </data>
 </root>
