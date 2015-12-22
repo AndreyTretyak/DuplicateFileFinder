@@ -56,7 +56,8 @@ could be used but for this part of `DuplicateFileFinder.Core` should be moved to
 
 ### III. Performance optimization
 
-#### 1. Redundant comparator call's, for example hash comparation for two files meanless, would be better to call explicit comparation directly.
+#### 1. Redundant comparator call's
+Hash comparation for two files meanless, would be better to call explicit comparation directly.
 
 #### 2. There are not always need in complete hash calculation. 
 Hash comparator can be splited into couple parts like calculation of first 100 Mb, next 1GB and rest part of file. 
