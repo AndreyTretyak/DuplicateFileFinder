@@ -59,9 +59,9 @@ could be used but for this part of `DuplicateFileFinder.Core` should be moved to
 #### 1. Redundant comparator call's
 Hash comparation for two files meanless, would be better to call explicit comparation directly.
 
-#### 2. There are not always need in complete hash calculation. 
+#### 2. There are not always need in complete hash calculation
 Hash comparator can be splited into couple parts like calculation of first 100 Mb, next 1GB and rest part of file. 
 Comparing of those parts and not complete file hash could save a lot of time, and in some cases be more precise than regular hash comparison.
 
-#### 3. Some comparison actions could be applied before previous finished. 
+#### 3. Some comparison actions could be applied before previous finished 
 For example, comparison of creteries could be started as soon as we have two criterias, not all of them. But this approach will require much more work in multi thread access synchronization.
