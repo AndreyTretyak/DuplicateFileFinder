@@ -85,6 +85,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\CustomComparatorFactory.cs" />
+    <Compile Include="ViewModel\FileGroupViewModel.cs" />
+    <Compile Include="ViewModel\FileSystemItemViewModel.cs" />
     <Compile Include="ViewModel\ImplementationViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />

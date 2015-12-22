@@ -124,6 +124,15 @@ namespace DuplicateFileFinder.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicated files: {0}..
+        /// </summary>
+        public static string DuplicatedFilesOutput {
+            get {
+                return ResourceManager.GetString("DuplicatedFilesOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate Items Finder.
         /// </summary>
         public static string DuplicateFilesFinder {
@@ -264,6 +273,33 @@ namespace DuplicateFileFinder.UI {
         public static string SaveResult {
             get {
                 return ResourceManager.GetString("SaveResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text (*.txt)|*.txt|All File Types (*.*)|*.*.
+        /// </summary>
+        public static string SavingFileTypesFilter {
+            get {
+                return ResourceManager.GetString("SavingFileTypesFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search should be finished for saving result.
+        /// </summary>
+        public static string SearchNotFinished {
+            get {
+                return ResourceManager.GetString("SearchNotFinished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search not finished.
+        /// </summary>
+        public static string SearchNotFinishedHeader {
+            get {
+                return ResourceManager.GetString("SearchNotFinishedHeader", resourceCulture);
             }
         }
         

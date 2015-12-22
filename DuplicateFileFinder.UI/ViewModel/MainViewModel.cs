@@ -19,33 +19,12 @@ using GalaSoft.MvvmLight.Command;
 
 namespace DuplicateFileFinder.UI.ViewModel
 {
-    /// <summary>
-    /// This class contains properties that the main View can data bind to.
-    /// <para>
-    /// Use the <strong>mvvminpc</strong> snippet to add bindable properties to this ViewModel.
-    /// </para>
-    /// <para>
-    /// You can also use Blend to data bind with the tool's support.
-    /// </para>
-    /// <para>
-    /// See http://www.galasoft.ch/mvvm
-    /// </para>
-    /// </summary>
+
     public class MainViewModel : ViewModelBase
     {
-        /// <summary>
-        /// Initializes a new instance of the MainViewModel class.
-        /// </summary>
+
         public MainViewModel()
         {
-            ////if (IsInDesignMode)
-            ////{
-            ////    // Code runs in Blend --> create design time data.
-            ////}
-            ////else
-            ////{
-            ////    // Code runs "for real"
-            ////}
             Comparators = new ObservableCollection<ImplementationViewModel<IFileComparator>>
             (
                 new DefaultComparatorsFactory().GetComparators().Select(c => new ImplementationViewModel<IFileComparator>(c, true))
@@ -94,6 +73,7 @@ namespace DuplicateFileFinder.UI.ViewModel
                     Items.Clear();
                 FileGroups?.Clear();
                 ResultSummary = string.Empty;
+                _fileGroups = null;
                 await Task.Run(async () =>
                 {
                     var directory = await SelectedProvider.Implementation.GetDirectoryAsync(FolderPath);
@@ -233,6 +213,8 @@ namespace DuplicateFileFinder.UI.ViewModel
 
         public string StartButtonText => InProgress ? Resource.Cancel : Resource.FindDuplicates;
 
+        private IEnumerable<FileGroup> _fileGroups;
+
         private async void FindDuplicates()
         {
             if (!InProgress)
@@ -249,13 +231,13 @@ namespace DuplicateFileFinder.UI.ViewModel
                 var progress = new Progress<IProgressChanged>(ProgresChanged);
 
                 var isCanceled = false;
-                IEnumerable<FileGroup> fileGroups = null; 
+                _fileGroups = null; 
                 await Task.Run(async () =>
                 {
                     try
                     {
                         var factory = new CustomComparatorFactory(Comparators.Where(c => c.IsEnabled).Select(c => c.Implementation));
-                        fileGroups = await new ComparationManager(factory).FindDuplicatesAsync(Files, _cancellationTokenSource.Token, progress);
+                        _fileGroups = await new ComparationManager(factory).FindDuplicatesAsync(Files, _cancellationTokenSource.Token, progress);
                     }
                     catch (OperationCanceledException)
                     {
@@ -272,9 +254,9 @@ namespace DuplicateFileFinder.UI.ViewModel
                 else 
                     FileGroups.Clear();
 
-                if (!isCanceled && fileGroups != null)
+                if (!isCanceled && _fileGroups != null)
                 {
-                    foreach (var fileGroup in fileGroups.Where(g => g.Count > 1).OrderByDescending(g => g.Count))
+                    foreach (var fileGroup in _fileGroups.Where(g => g.Count > 1).OrderByDescending(g => g.Count))
                     {
                         FileGroups.Add(new FileGroupViewModel(fileGroup));
                     }
@@ -337,75 +319,35 @@ namespace DuplicateFileFinder.UI.ViewModel
 
         private void SaveResult()
         {
-
-        }
-    }
-
-    public class CustomComparatorFactory : IComparatorsFactory
-    {
-        private readonly IReadOnlyList<IFileComparator> _comparators;
-
-        public CustomComparatorFactory(IEnumerable<IFileComparator> comparators)
-        {
-            _comparators = comparators.ToList().AsReadOnly();
-        }
-
-
-        public IReadOnlyList<IFileComparator> GetComparators()
-        {
-            return _comparators;
-        }
-    }
-
-    public class FileSystemItemViewModel
-    {
-        public string Name { get;  }
-        public ObservableCollection<FileSystemItemViewModel> Items { get; }
-
-        public FileSystemItemViewModel(IDirectory directory, IEnumerable<FileSystemItemViewModel> content)
-        {
-            Name = directory.Name;
-            Items = new ObservableCollection<FileSystemItemViewModel>();
-            foreach (var item in content)
+            if (_fileGroups == null)
             {
-                Items.Add(item);
+                System.Windows.MessageBox.Show(Resource.SearchNotFinished, Resource.SearchNotFinishedHeader, MessageBoxButton.OK, MessageBoxImage.Information);
             }
-        }
 
-        public FileSystemItemViewModel(IComparableFile file)
-        {
-            Name = Path.GetFileName(file.FileName);
-            Items = new ObservableCollection<FileSystemItemViewModel>();
-        }
-
-    }
-
-    public class FileGroupViewModel
-    {
-        private readonly FileGroup _fileGroup;
-
-        public string Name { get; }
-        public bool IsError => _fileGroup.IsError;
-        public ObservableCollection<FileGroupViewModel> Files { get; }
-
-        public FileGroupViewModel(FileGroup fileGroup)
-        {
-            _fileGroup = fileGroup;
-            Name = (_fileGroup.IsError ? $"({Resource.FailedToLoad}) " : string.Empty) + _fileGroup.First().FileName;
-
-            Files = new ObservableCollection<FileGroupViewModel>();
-            if (_fileGroup.Count > 1)
+            var dialog = new Microsoft.Win32.SaveFileDialog
             {
-                foreach (var file in _fileGroup.Skip(1))
+                DefaultExt = "*.txt",
+                Filter = Resource.SavingFileTypesFilter
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                try
                 {
-                    Files.Add(new FileGroupViewModel(file));
+                    using (var stream = new StreamWriter(File.OpenWrite(dialog.FileName)))
+                    {
+                        foreach (var fileGroup in _fileGroups.Where(g => !g.IsError &&  g.Count > 1))
+                        {
+                            stream.WriteLine(Resource.DuplicatedFilesOutput, string.Join(", ", fileGroup.Select(f => f.FileName)));
+                        }
+                    } 
+
+                }
+                catch (Exception exception)
+                {
+                    System.Windows.MessageBox.Show(exception.ToString(), Resource.FaildedToLoadAssembly, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
-        }
-
-        public FileGroupViewModel(IComparableFile file)
-        {
-            Name = file.FileName;
         }
     }
 }

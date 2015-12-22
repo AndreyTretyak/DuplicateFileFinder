@@ -195,4 +195,16 @@
   <data name="FailedToLoad" xml:space="preserve">
     <value>Failed to load</value>
   </data>
+  <data name="DuplicatedFilesOutput" xml:space="preserve">
+    <value>Duplicated files: {0}.</value>
+  </data>
+  <data name="SearchNotFinished" xml:space="preserve">
+    <value>Search should be finished for saving result</value>
+  </data>
+  <data name="SearchNotFinishedHeader" xml:space="preserve">
+    <value>Search not finished</value>
+  </data>
+  <data name="SavingFileTypesFilter" xml:space="preserve">
+    <value>Text (*.txt)|*.txt|All File Types (*.*)|*.*</value>
+  </data>
 </root>

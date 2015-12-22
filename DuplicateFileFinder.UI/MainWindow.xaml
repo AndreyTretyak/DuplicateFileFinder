@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:DuplicateFileFinder.UI.ViewModel"
         mc:Ignorable="d"
         DataContext="{Binding Main, Source={StaticResource Locator}}"
-        Title="{x:Static local:Resource.DuplicateFilesFinder}" MinHeight="500" Height="600" MinWidth="600" Width="800">
+        Title="{x:Static local:Resource.DuplicateFilesFinder}" MinHeight="500" Height="800" MinWidth="600" Width="1100">
     <Window.Resources>
         <Style x:Key="BaseElementStyle" TargetType="FrameworkElement">
             <Setter Property="Margin" Value="3" />
