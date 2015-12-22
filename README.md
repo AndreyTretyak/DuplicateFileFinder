@@ -54,7 +54,7 @@ Support cancellation based on `CancellationToken` and reporting about current pr
 could be used but for this part of `DuplicateFileFinder.Core` should be moved to shared project, which has some minor difficalties in configuration.
 
 
-### III. Performance optimization
+### IV. Performance optimization
 
 #### 1. Redundant comparator call's
 Hash comparation for two files meanless, would be better to call explicit comparation directly.
