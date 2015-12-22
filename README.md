@@ -3,13 +3,13 @@
 Simple OOP demo for search of duplicated files
 
 
-## I. General description, main features
+### I. General description, main features
 
 Main focus in this project was made on simplification of extensibility. Wpf application able to use custom file providers like Azure (currently in development), Amazon S3, FTP and other's.
 Beside that there also possibility to add custom comparators and select order in which they will be applied to files.
 
 
-## II. Comparators
+### II. Comparators
 
 Comparison process splitted in two stages:
 * Calculation of comparation criteria, any calculations with single file (ex. size, hash).
@@ -21,13 +21,13 @@ Currently application contains those comparators:
 * `ExplicitComparator` slowest comparator base on direst comparation of file content.
 
 
-## III. Solution structure
+### III. Solution structure
 
-### 1. `DuplicateFileFinder.Core.Interfaces`
-Contains base intarfaces and could be used for creation of custom file providers `IFileProvider` and comparators `IFileComparator`.
+#### 1. General interfaces 
+`DuplicateFileFinder.Core.Interfaces` - contains base intarfaces and could be used for creation of custom file providers `IFileProvider` and comparators `IFileComparator`.
 
-### 2. `DuplicateFileFinder.Core`
-Contains main logic of appliction:
+#### 2. Application core
+`DuplicateFileFinder.Core` - contains main logic of appliction:
 * `ComparationManager` class that manages file comparation, could work with any providers and comparators that implements spesial interfaces. 
 Support cancellation based on `CancellationToken` and reporting about current progress.
 * `LocalFileProvider` allow work with files in local file system.
@@ -35,30 +35,33 @@ Support cancellation based on `CancellationToken` and reporting about current pr
 * Namespace `DuplicateFileFinder.Core.ProgressChanges` contains classes that are used for tracking comparation progress.
 * `ComparationSettings` low level compation settings like buffer size and default hash algorithm.
 
-### 3. `DuplicateFileFinder.Core.Console`
-Simplest console interface for file comparation.
+#### 3. Console demo application
+`DuplicateFileFinder.Core.Console` - simplest console interface for file comparation.
 
-### 4. `DuplicateFileFinder.Core.UI`
-WPF application for usage of comparation core. Allow to add file providers, comparators and change order of comparators applying.
+#### 4. WPF application for usage of comparation core
+`DuplicateFileFinder.Core.UI` Allow to add file providers, comparators and change order of comparators applying.
 
-### 5. `DuplicateFileFinder.Core.Tests`
-Unit test for comparation core.
+#### 5. Unit test for comparation core.
+`DuplicateFileFinder.Core.Tests`
 
-### 6. `DuplicateFileFinder.Core.Azure`
-Class libary for implementation of Azure Blob file provider (Currently in development).
 
-### 7. `DuplicateFileFinder.Core.Universal`
-Class's that allow compartion core to work in Universal Windows Applications, 
+#### 6. Class libary for implementation of Azure Blob file provider (Currently in development).
+`DuplicateFileFinder.Core.Azure`
+
+
+#### 7. Univarsal application comparation core
+`DuplicateFileFinder.Core.Universal` - classes that allow compartion core to work in Universal Windows Applications, 
 could be used but for this part of `DuplicateFileFinder.Core` should be moved to shared project, which has some minor difficalties in configuration.
 
 
-## III. Performance optimization
+### IV. Performance optimization
 
-### 1. Redundant comparator call's, for example hash comparation for two files meanless, would be better to call explicit comparation directly.
+#### 1. Redundant comparator call's
+Hash comparation for two files meanless, would be better to call explicit comparation directly.
 
-### 2. There are not always need in complete hash calculation. 
+#### 2. There are not always need in complete hash calculation
 Hash comparator can be splited into couple parts like calculation of first 100 Mb, next 1GB and rest part of file. 
 Comparing of those parts and not complete file hash could save a lot of time, and in some cases be more precise than regular hash comparison.
 
-### 3. Some comparison actions could be applied before previous finished. 
+#### 3. Some comparison actions could be applied before previous finished 
 For example, comparison of creteries could be started as soon as we have two criterias, not all of them. But this approach will require much more work in multi thread access synchronization.
