@@ -105,11 +105,11 @@
             </Grid.RowDefinitions>
             <Label Grid.Row="0" Grid.Column="0" Content="{x:Static local:Resource.SelectedFolderContent}" />
             <TreeView Grid.Row="1" Grid.Column="0" 
-                      ItemsSource="{Binding Files}"
+                      ItemsSource="{Binding Items}"
                       Style="{StaticResource TreeViewStyle}">
                 <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate>
-                        <Label Content="{Binding FileName}"/>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Items}">
+                        <Label Content="{Binding Name}"/>
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
             </TreeView>
@@ -120,8 +120,8 @@
                       ItemsSource="{Binding FileGroups}"
                       Style="{StaticResource TreeViewStyle}">
                 <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding}">
-                        <Label Content="{Binding}"/>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Files}">
+                        <Label Content="{Binding Name}"/>
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
             </TreeView>
@@ -130,5 +130,6 @@
         </Grid>
         <ProgressBar Grid.Row="2" Value="{Binding ProgressValue}" Style="{StaticResource ProgresBarStyle}"></ProgressBar>
         <Label Grid.Row="2" HorizontalAlignment="Left" Content="{Binding ProgressMessage}" Style="{StaticResource LableStyle}"/>
+        <Separator HorizontalAlignment="Left" Height="100" Margin="1048,39,-362,-107" Grid.Row="2" VerticalAlignment="Top" Width="100"/>
     </Grid>
 </Window>

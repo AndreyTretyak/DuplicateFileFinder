@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using System.Threading.Tasks;
 
-namespace DuplicateFileFinder.Core.Files
+namespace DuplicateFileFinder.Core.Providers
 {
     internal class LocalComparableFile : IComparableFile
     {

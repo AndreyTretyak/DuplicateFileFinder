@@ -59,7 +59,9 @@ namespace DuplicateFileFinder.UI.ViewModel
             SelectedProvider = Providers.FirstOrDefault();
         }
 
-        public ObservableCollection<IComparableFile> Files { get; set; }
+        public ObservableCollection<FileSystemItemViewModel> Items { get; set; }
+
+        private List<IComparableFile> Files { get; } = new List<IComparableFile>();
 
         public string FilesFound => Files?.Count > 0 ? string.Format(Resource.Files, Files.Count) : string.Empty;
 
@@ -84,17 +86,43 @@ namespace DuplicateFileFinder.UI.ViewModel
             if (result == DialogResult.OK)
             {
                 FolderPath = dialog.SelectedPath;
+
+                List<FileSystemItemViewModel> list = null;
+                if (Items == null)
+                    Items = new ObservableCollection<FileSystemItemViewModel>();
+                else
+                    Items.Clear();
+                FileGroups?.Clear();
+                ResultSummary = string.Empty;
                 await Task.Run(async () =>
                 {
-                    Files = new ObservableCollection<IComparableFile>();
-                    foreach (var file in await SelectedProvider.Implementation.GetDirectoryFilesAsync(FolderPath))
-                    {
-                        Files.Add(file);
-                    }
+                    var directory = await SelectedProvider.Implementation.GetDirectoryAsync(FolderPath);
+                    Files.Clear();
+                    list = await GetDirectoryContentAsync(directory);
                 });
-                RaisePropertyChanged(() => Files);
+                if (list != null)
+                {
+                    foreach (var file in list)
+                    {
+                        Items.Add(file);
+                    }
+                }
+                RaisePropertyChanged(() => Items);
                 RaisePropertyChanged(() => FilesFound);
             }
+        }
+
+        public async Task<List<FileSystemItemViewModel>> GetDirectoryContentAsync(IDirectory dir)
+        {
+            var list = new List<FileSystemItemViewModel>();
+            foreach (var subDir in await dir.GetDirectoriesAsync())
+            {
+                list.Add(new FileSystemItemViewModel(subDir,await GetDirectoryContentAsync(subDir)));
+            }
+            var files = await dir.GetFilesAsync();
+            Files.AddRange(files);
+            list.AddRange(files.Select(f => new FileSystemItemViewModel(f)));
+            return list;
         }
 
         public RelayCommand ChangeComparatorStatusCommand => new RelayCommand(ChangeComparatorStatus);
@@ -189,7 +217,7 @@ namespace DuplicateFileFinder.UI.ViewModel
 
         public RelayCommand FindDuplicatesCommand => new RelayCommand(FindDuplicates);
 
-        public ObservableCollection<FileGroup> FileGroups { get; set; }
+        public ObservableCollection<FileGroupViewModel> FileGroups { get; set; }
 
         private bool _inProgress = false;
 
@@ -210,7 +238,7 @@ namespace DuplicateFileFinder.UI.ViewModel
             if (!InProgress)
             {
                 InProgress = true;
-                if (Files == null)
+                if (Items == null)
                 {
                     System.Windows.MessageBox.Show(Resource.PleaseSelectDirectory, Resource.NoDirectorySelected, MessageBoxButton.OK, MessageBoxImage.Information);
                     InProgress = false;
@@ -220,22 +248,39 @@ namespace DuplicateFileFinder.UI.ViewModel
                 _progressInformation = new ProgressInformation();
                 var progress = new Progress<IProgressChanged>(ProgresChanged);
 
+                var isCanceled = false;
+                IEnumerable<FileGroup> fileGroups = null; 
                 await Task.Run(async () =>
                 {
                     try
                     {
-                        FileGroups = new ObservableCollection<FileGroup>();
-                        foreach (var fileGroup in await new ComparationManager().FindDuplicatesAsync(Files, _cancellationTokenSource.Token, progress))
-                        {
-                            FileGroups.Add(fileGroup);
-                        }
+                        var factory = new CustomComparatorFactory(Comparators.Where(c => c.IsEnabled).Select(c => c.Implementation));
+                        fileGroups = await new ComparationManager(factory).FindDuplicatesAsync(Files, _cancellationTokenSource.Token, progress);
                     }
                     catch (OperationCanceledException)
                     {
+                        isCanceled = true;
                         ProgressValue = 0;
                         ProgressMessage = Resource.OperationCanceled;
                     }
                 });
+
+                if (FileGroups == null)
+                {
+                    FileGroups = new ObservableCollection<FileGroupViewModel>();
+                }
+                else 
+                    FileGroups.Clear();
+
+                if (!isCanceled && fileGroups != null)
+                {
+                    foreach (var fileGroup in fileGroups.Where(g => g.Count > 1).OrderByDescending(g => g.Count))
+                    {
+                        FileGroups.Add(new FileGroupViewModel(fileGroup));
+                    }
+                    ResultSummary = _progressInformation.CurrentAction;
+                }
+                RaisePropertyChanged(() => FileGroups);
                 InProgress = false;
             }
             else
@@ -293,6 +338,74 @@ namespace DuplicateFileFinder.UI.ViewModel
         private void SaveResult()
         {
 
+        }
+    }
+
+    public class CustomComparatorFactory : IComparatorsFactory
+    {
+        private readonly IReadOnlyList<IFileComparator> _comparators;
+
+        public CustomComparatorFactory(IEnumerable<IFileComparator> comparators)
+        {
+            _comparators = comparators.ToList().AsReadOnly();
+        }
+
+
+        public IReadOnlyList<IFileComparator> GetComparators()
+        {
+            return _comparators;
+        }
+    }
+
+    public class FileSystemItemViewModel
+    {
+        public string Name { get;  }
+        public ObservableCollection<FileSystemItemViewModel> Items { get; }
+
+        public FileSystemItemViewModel(IDirectory directory, IEnumerable<FileSystemItemViewModel> content)
+        {
+            Name = directory.Name;
+            Items = new ObservableCollection<FileSystemItemViewModel>();
+            foreach (var item in content)
+            {
+                Items.Add(item);
+            }
+        }
+
+        public FileSystemItemViewModel(IComparableFile file)
+        {
+            Name = Path.GetFileName(file.FileName);
+            Items = new ObservableCollection<FileSystemItemViewModel>();
+        }
+
+    }
+
+    public class FileGroupViewModel
+    {
+        private readonly FileGroup _fileGroup;
+
+        public string Name { get; }
+        public bool IsError => _fileGroup.IsError;
+        public ObservableCollection<FileGroupViewModel> Files { get; }
+
+        public FileGroupViewModel(FileGroup fileGroup)
+        {
+            _fileGroup = fileGroup;
+            Name = (_fileGroup.IsError ? $"({Resource.FailedToLoad}) " : string.Empty) + _fileGroup.First().FileName;
+
+            Files = new ObservableCollection<FileGroupViewModel>();
+            if (_fileGroup.Count > 1)
+            {
+                foreach (var file in _fileGroup.Skip(1))
+                {
+                    Files.Add(new FileGroupViewModel(file));
+                }
+            }
+        }
+
+        public FileGroupViewModel(IComparableFile file)
+        {
+            Name = file.FileName;
         }
     }
 }

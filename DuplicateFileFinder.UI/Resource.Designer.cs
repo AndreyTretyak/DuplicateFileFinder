@@ -79,7 +79,7 @@ namespace DuplicateFileFinder.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Assemly Files (*.dll)|*.dll|All File Types (*.*)|*.*.
+        ///   Looks up a localized string similar to Assemly Items (*.dll)|*.dll|All File Types (*.*)|*.*.
         /// </summary>
         public static string AssemblyFileTypes {
             get {
@@ -124,7 +124,7 @@ namespace DuplicateFileFinder.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Duplicate Files Finder.
+        ///   Looks up a localized string similar to Duplicate Items Finder.
         /// </summary>
         public static string DuplicateFilesFinder {
             get {
@@ -169,6 +169,15 @@ namespace DuplicateFileFinder.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to load.
+        /// </summary>
+        public static string FailedToLoad {
+            get {
+                return ResourceManager.GetString("FailedToLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} files.
         /// </summary>
         public static string Files {
@@ -178,7 +187,7 @@ namespace DuplicateFileFinder.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Files Provider.
+        ///   Looks up a localized string similar to Items Provider.
         /// </summary>
         public static string FilesProvider {
             get {

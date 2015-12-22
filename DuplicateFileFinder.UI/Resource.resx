@@ -130,7 +130,7 @@
     <value>Disable</value>
   </data>
   <data name="DuplicateFilesFinder" xml:space="preserve">
-    <value>Duplicate Files Finder</value>
+    <value>Duplicate Items Finder</value>
   </data>
   <data name="DuplicatesFound" xml:space="preserve">
     <value>{0} duplicates found</value>
@@ -145,7 +145,7 @@
     <value>{0} files</value>
   </data>
   <data name="FilesProvider" xml:space="preserve">
-    <value>Files Provider</value>
+    <value>Items Provider</value>
   </data>
   <data name="FindDuplicates" xml:space="preserve">
     <value>Find Duplicates</value>
@@ -172,7 +172,7 @@
     <value>Select Folder...</value>
   </data>
   <data name="AssemblyFileTypes" xml:space="preserve">
-    <value>Assemly Files (*.dll)|*.dll|All File Types (*.*)|*.*</value>
+    <value>Assemly Items (*.dll)|*.dll|All File Types (*.*)|*.*</value>
   </data>
   <data name="FaildedToLoadAssembly" xml:space="preserve">
     <value>Failed to load Assembly</value>
@@ -191,5 +191,8 @@
   </data>
   <data name="PleaseSelectDirectory" xml:space="preserve">
     <value>Please select directory to check</value>
+  </data>
+  <data name="FailedToLoad" xml:space="preserve">
+    <value>Failed to load</value>
   </data>
 </root>
