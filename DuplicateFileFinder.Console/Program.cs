@@ -18,9 +18,6 @@ namespace DuplicateFileFinder.Console
 
         static void Main(string[] args)
         {
-            var provider = new AzureFileProvider();
-            provider.GetFileAsync("");
-
             _hasArguments = args.Length > 0;
             
             //select directory
